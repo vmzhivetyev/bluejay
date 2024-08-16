@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Link Artifacts via action
-        uses: stylesuxx/link-artifacts-in-pr-action@v1
+        uses: stylesuxx/link-artifacts-in-pr-action@v2
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           whitelist: "[]"
