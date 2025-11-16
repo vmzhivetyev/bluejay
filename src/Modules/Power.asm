@@ -77,8 +77,22 @@ set_pwm_limit_calculate:
     div  AB
     mov  B, Low_Rpm_Pwr_Slope           ; Multiply by slope
     mul  AB
+    ; Divide by 4 using right shift (>>2) - more efficient than div
+    ; This gives 4× finer resolution: new slope 4 = old 1, new 8 = old 2
+    mov  Temp2, B                       ; Save high byte
+    clr  C
+    rrc  A                               ; Shift right 1 bit (÷2)
+    mov  Temp3, A
+    mov  A, Temp2
+    rrc  A                               ; Rotate high byte through carry
+    mov  Temp2, A
+    mov  A, Temp3
+    clr  C
+    rrc  A                               ; Shift right 1 bit again (÷2, total ÷4)
     mov  Temp1, A                       ; Set new limit
-    xch  A, B
+    mov  A, Temp2
+    rrc  A                               ; Rotate high byte through carry
+    xch  A, B                            ; B = high byte (for overflow check)
 
     ; If RPM_PWM_LIMIT < 255 goto set_pwm_limit_check_limit_to_min
     jz   set_pwm_limit_check_limit_to_min ; Limit to max
